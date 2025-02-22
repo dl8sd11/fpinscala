@@ -2,20 +2,26 @@ package fpinscala.exercises.errorhandling
 
 // Hide std library `Option` since we are writing our own in this chapter
 import scala.{Option as _, Some as _, None as _}
+import java.util.Optional
 
 enum Option[+A]:
   case Some(get: A)
   case None
 
-  def map[B](f: A => B): Option[B] = ???
+  def map[B](f: A => B): Option[B] = this match
+    case Some(get) => Some(f(get))
+    case None => None
+  
+  def getOrElse[B>:A](default: => B): B = this match
+    case Some(get) => get
+    case None => default
 
-  def getOrElse[B>:A](default: => B): B = ???
+  def flatMap[B](f: A => Option[B]): Option[B] =
+    map(f).getOrElse(None)
 
-  def flatMap[B](f: A => Option[B]): Option[B] = ???
+  def orElse[B>:A](ob: => Option[B]): Option[B] = map(x => Some(x)).getOrElse(ob)
 
-  def orElse[B>:A](ob: => Option[B]): Option[B] = ???
-
-  def filter(f: A => Boolean): Option[A] = ???
+  def filter(f: A => Boolean): Option[A] = map(x => if f(x) then Some(x) else None).getOrElse(None)
 
 object Option:
 
@@ -36,10 +42,14 @@ object Option:
     if xs.isEmpty then None
     else Some(xs.sum / xs.length)
 
-  def variance(xs: Seq[Double]): Option[Double] = ???
+  def variance(xs: Seq[Double]): Option[Double] = 
+    mean(xs).flatMap(m => mean(xs.map(x => math.pow(x - m, 2))))
 
-  def map2[A,B,C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] = ???
+  def map2[A,B,C](a: Option[A], b: Option[B])(f: (A, B) => C): Option[C] =
+    a.flatMap(aa => b.map(bb => f(aa, bb)))
 
-  def sequence[A](as: List[Option[A]]): Option[List[A]] = ???
+  def sequence[A](as: List[Option[A]]): Option[List[A]] =
+    as.foldRight(Some(List[A]()))((o, list) => map2(o, list)(_ :: _))
 
-  def traverse[A, B](as: List[A])(f: A => Option[B]): Option[List[B]] = ???
+  def traverse[A, B](as: List[A])(f: A => Option[B]): Option[List[B]] =
+    as.foldRight[Option[List[B]]](Some(Nil))((e, acc) => map2(f(e), acc)(_ :: _))
