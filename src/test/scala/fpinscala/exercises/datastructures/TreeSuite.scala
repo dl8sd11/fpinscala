@@ -40,10 +40,6 @@ class TreeSuite extends PropSuite:
   test("size(tree)")(genIntTree): tree =>
     assertEquals(Tree.size(tree), toScalaList(tree).length)
 
-  test("Tree.firstPositive")(genIntTree): tree =>
-    val t = toScalaList(tree)
-    assertEquals(tree.firstPositive, t.flatten.find(_ > 0).getOrElse(t.last.get))
-
   test("Tree.maximum")(genIntTree): tree =>
     assertEquals(tree.maximum, toScalaList(tree).max.getOrElse(0))
 

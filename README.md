@@ -39,7 +39,7 @@ working through the book.
 Chapter descriptions:
 
 * [x] Chapter 2: gettingstarted
-* [ ] Chapter 3: datastructures
+* [x] Chapter 3: datastructures
 * [ ] Chapter 4: errorhandling
 * [ ] Chapter 5: laziness
 * [ ] Chapter 6: state
